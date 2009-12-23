@@ -47,16 +47,6 @@ describe SantaSecret do
     end
   end
   
-  it "should not allow people in the same family to be Santas for each other" do
-    santa = SantaSecret.new(@persons)
-    pairs = santa.choosePairs
-    pairs.each do |person,other_person|
-      familly_name = person.match(/ [a-zA-Z0-9]+ /)
-      other_familly_name = other_person.match(/ [a-zA-Z0-9]+ /)
-      familly_name.should_not be_equal(other_familly_name)
-    end
-  end
-  
   it "should not left people without a pair" do
     santa = SantaSecret.new(@persons)
     pairs = santa.choosePairs

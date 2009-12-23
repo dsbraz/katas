@@ -10,37 +10,26 @@ class SantaSecret
   
   def choosePairs
     pairs = Hash.new
-    other_persons = @persons.dup
+    persons_to_choose = @persons.dup
     @persons.each do |person|
-      other_person = fetch_pair(person, other_persons)
-      pairs.store(person, other_person)
-      other_persons.delete(other_person)
+      chosen_person = fetch_pair!(person, persons_to_choose)
+      pairs.store(person, chosen_person)
     end
     return pairs
   end
   
   private
     
-    def fetch_pair(person, other_persons)
-      other_person = fetch_rand_person(other_persons)
-      while from_same_familly?(person, other_person) && other_persons.size > 2
-        other_person = fetch_rand_person(other_persons)
-      end
-      return other_person
-    end
-    
-    def from_same_familly?(person, other_person)
-      familly_name = get_familly_name(person)
-      familly_name_from_other = get_familly_name(other_person)
-      return familly_name.to_s == familly_name_from_other.to_s
+    def fetch_pair!(person, persons_to_choose)
+      persons_to_choose.delete(person)
+      chosen_person = fetch_rand_person(persons_to_choose)
+      persons_to_choose.delete(chosen_person)
+      persons_to_choose.push(person)
+      return chosen_person
     end
     
     def fetch_rand_person(persons)
       persons.fetch(rand(persons.size))
-    end
-    
-    def get_familly_name(person)
-      person.match(/ [a-zA-Z0-9]+ /)
     end
     
     def validate_array_size!
