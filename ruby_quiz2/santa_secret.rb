@@ -22,14 +22,15 @@ class SantaSecret
     
     def fetch_pair!(person, persons_to_choose)
       persons_to_choose.delete(person)
-      chosen_person = fetch_rand_person(persons_to_choose)
-      persons_to_choose.delete(chosen_person)
+      chosen_person = fetch_rand_person!(persons_to_choose)
       persons_to_choose.push(person)
       return chosen_person
     end
     
-    def fetch_rand_person(persons)
-      persons.fetch(rand(persons.size))
+    def fetch_rand_person!(persons_to_choose)
+      chosen_person = persons_to_choose.fetch(rand(persons_to_choose.size))
+      persons_to_choose.delete(chosen_person)
+      return chosen_person
     end
     
     def validate_array_size!
@@ -48,7 +49,7 @@ class SantaSecret
   
     def valid_email?(email)
       # xxx xxx <xxx@xxx.xxx.xx>
-      regex = %r{^[a-zA-Z]+ [a-zA-Z]+ <{1}[a-zA-Z0-9\._]+[^\.]@{1}[a-zA-Z0-9]+\.{1}[a-zA-Z0-9]+(\.{1}[a-zA-Z0-9]{2})?>{1}$}i
+      regex = %r{^[a-zA-Z]+ [a-zA-Z]+ <{1}[a-zA-Z0-9\._-]+[^\._-]@{1}[a-zA-Z0-9]+\.{1}[a-zA-Z0-9]+(\.{1}[a-zA-Z0-9]{2})?>{1}$}i
       email.match regex
     end
   
