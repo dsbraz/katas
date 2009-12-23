@@ -2,40 +2,65 @@
 
 class SantaSecret
   
-  def initialize(emails)
-    @emails = emails
-    if emails.size % 2 == 0
-      raise StardardError.new("Invalid size")
-    end
-    emails.each do |email|
-      if not valid_email? email
-        raise StandardError.new("invalid email: #{email}")
-      end
-    end
+  def initialize(persons)
+    @persons = persons
+    validate_array_size!
+    validate_array_content!
   end
   
   def choosePairs
     pairs = Hash.new
-    value_emails = @emails.dup
-    @emails.each do |key_email|
-      key_familly_name = key_email.match(/ [a-zA-Z0-9]+ /)
-      value_email = value_emails.fetch(rand(value_emails.size))
-      value_familly_name = value_email.match(/ [a-zA-Z0-9]+ /)
-      while key_familly_name.to_s == value_familly_name.to_s and value_emails.size > 2
-        value_email = value_emails.fetch(rand(value_emails.size))
-        value_familly_name = value_email.match(/ [a-zA-Z0-9]+ /)
-      end
-      value_emails.delete(value_email)
-      pairs.store(key_email, value_email)
+    other_persons = @persons.dup
+    @persons.each do |person|
+      other_person = fetch_pair(person, other_persons)
+      pairs.store(person, other_person)
+      other_persons.delete(other_person)
     end
     return pairs
   end
   
   private
+    
+    def fetch_pair(person, other_persons)
+      other_person = fetch_rand_person(other_persons)
+      while from_same_familly?(person, other_person) && other_persons.size > 2
+        other_person = fetch_rand_person(other_persons)
+      end
+      return other_person
+    end
+    
+    def from_same_familly?(person, other_person)
+      familly_name = get_familly_name(person)
+      familly_name_from_other = get_familly_name(other_person)
+      return familly_name.to_s == familly_name_from_other.to_s
+    end
+    
+    def fetch_rand_person(persons)
+      persons.fetch(rand(persons.size))
+    end
+    
+    def get_familly_name(person)
+      person.match(/ [a-zA-Z0-9]+ /)
+    end
+    
+    def validate_array_size!
+      raise StardardError.new("Invalid array size") unless odd_size_array? @persons
+    end
+
+    def odd_size_array?(array)
+      array.size % 2 != 0
+    end
+    
+    def validate_array_content!
+      @persons.each do |person|
+        raise StandardError.new("invalid email: #{email}") unless valid_email? person
+      end
+    end
+  
     def valid_email?(email)
       # xxx xxx <xxx@xxx.xxx.xx>
-      re = %r{^[a-zA-Z]+ [a-zA-Z]+ <{1}[a-zA-Z0-9\._]+[^\.]@{1}[a-zA-Z0-9]+\.{1}[a-zA-Z0-9]+(\.{1}[a-zA-Z0-9]{2})?>{1}$}i
-      email.match re
+      regex = %r{^[a-zA-Z]+ [a-zA-Z]+ <{1}[a-zA-Z0-9\._]+[^\.]@{1}[a-zA-Z0-9]+\.{1}[a-zA-Z0-9]+(\.{1}[a-zA-Z0-9]{2})?>{1}$}i
+      email.match regex
     end
   
 end
